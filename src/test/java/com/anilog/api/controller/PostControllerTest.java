@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -19,8 +20,18 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 Hello world출력")
     void test() throws Exception {
+        // 글 제목
+        // 글 내용
+        // 사용자
+            // id
+            // user
+            // level
+
         //expected
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts"))
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
+                )  // application/json
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Hello world"))
                 .andDo(MockMvcResultHandlers.print());
