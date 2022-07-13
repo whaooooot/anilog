@@ -2,8 +2,13 @@ package com.anilog.api.controller;
 
 import com.anilog.api.request.PostCreate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -13,32 +18,24 @@ public class PostController {
 
     //Http Method
     //GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD, TRACE, CONNECT
+
     // 글 등록
     //POST Method
-
     @PostMapping("/posts")
-    public String post(@RequestBody PostCreate params) {
+    public Map<String, String> post(@RequestBody @Valid PostCreate params, BindingResult result) {
+        if (result.hasErrors()) {
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            FieldError firstFieldErrors = fieldErrors.get(0);
+            String fieldName = firstFieldErrors.getField(); //title
+            String errorMessage = firstFieldErrors.getDefaultMessage(); //..에러 메세지
 
-        /*
-         * 테스트에서 param으로 넘김
-         */
+            Map<String, String> error = new HashMap<>();
+            error.put(fieldName, errorMessage);
+            return error;
 
-        //@RequestParam String title, @RequestParam String content
-        //log.info("title={}, content={}", title, content);
+           }
 
-        //@RequestParam Map<String, String> params
-        //log.info("params={}", params);
-        //String title = params.get("title");
-
-        //PostCreate params //PostCreate 만들고 사용
-        //log.info("params={}", params.toString());
-
-        /*
-         * 테스트에서 json값으로 넘김
-         */
-        //@RequestBody PostCreate params
-        log.info("params={}", params.toString());
-
-        return "Hello world";
+        return Map.of();
     }
+
 }
