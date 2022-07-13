@@ -11,6 +11,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @WebMvcTest
 class PostControllerTest {
 
@@ -20,20 +24,28 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 Hello world출력")
     void test() throws Exception {
-        // 글 제목
-        // 글 내용
-        // 사용자
-            // id
-            // user
-            // level
 
         //expected
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
                 )  // application/json
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Hello world"))
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(status().isOk())
+                .andExpect(content().string("{}"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("/posts 요청시 title 값은 필수다.")
+    void test2() throws Exception {
+
+        //expected
+        mockMvc.perform(post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": null, \"content\": \"내용입니다.\"}")
+                )  // application/json
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("타이틀을 입력해주세요.")) //jsonPath사용
+                .andDo(print());
     }
 }
