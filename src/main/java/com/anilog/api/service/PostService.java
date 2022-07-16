@@ -16,8 +16,7 @@ public class PostService {
     private final PostRepository postRepository;
 
     public void write(PostCreate postCreate){
-        //postCreate -> Entity
-
+        //postCreate -> Entity 바꿈
         Post post = new Post(postCreate.getTitle(), postCreate.getContent());
         postRepository.save(post);
         //repository.save(postCreate);

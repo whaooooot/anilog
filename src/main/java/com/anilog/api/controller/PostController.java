@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PostController {
 
-    private PostService postService;
+    private final PostService postService;
 
     //Http Method
     //GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD, TRACE, CONNECT
