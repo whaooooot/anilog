@@ -1,7 +1,9 @@
 package com.anilog.api.controller;
 
+import com.anilog.api.domain.Post;
 import com.anilog.api.repository.PostRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@AutoConfigureMockMvc
+
 @SpringBootTest
+@AutoConfigureMockMvc
 class PostControllerTest {
 
     @Autowired
@@ -27,6 +31,11 @@ class PostControllerTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @BeforeEach
+    void clean(){
+        postRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("/posts 요청시 Hello world출력")
@@ -40,6 +49,7 @@ class PostControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("{}"))
                 .andDo(print());
+        //db -> post 1개등록
     }
 
     @Test
@@ -62,17 +72,26 @@ class PostControllerTest {
     @DisplayName("/posts 요청시 DB에 값이 저장된다..")
     void test3() throws Exception {
 
+        //before
+        //postRepository.deleteAll();
+        //위에 clean() 이 테스트메소드할때마다 실행됨
+
         //expected
         mockMvc.perform(post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
-                )  // application/json
+                )
                 .andExpect(status().isOk())
                 .andDo(print());
+        //db -> post 1개등록
 
         //then
-        Assertions.assertEquals(1L,postRepository.count());
+        assertEquals(1L,postRepository.count());
+        //db -> post 최종 test와 test3 2개등록됨 그래서 2로하고 전체돌려야 성공
 
+        Post post = postRepository.findAll().get(0);
+        assertEquals("제목입니다.", post.getTitle());  //db에 들어있는지 확인
+        assertEquals("내용입니다.", post.getContent());  //db에 들어있는지 확인
     }
 
 
