@@ -1,6 +1,8 @@
 package com.anilog.api.controller;
 
 import com.anilog.api.request.PostCreate;
+import com.anilog.api.service.PostService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -14,7 +16,10 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class PostController {
+
+    private PostService postService;
 
     //Http Method
     //GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD, TRACE, CONNECT
@@ -22,7 +27,9 @@ public class PostController {
     // 글 등록
     //POST Method
     @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostCreate params) {
+    public Map<String, String> post(@RequestBody @Valid PostCreate request) {
+        postService.write(request);
+        //repository.save(params)
         return Map.of();
     }
 
