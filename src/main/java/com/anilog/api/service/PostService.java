@@ -17,9 +17,14 @@ public class PostService {
 
     public void write(PostCreate postCreate){
         //postCreate -> Entity 바꿈
-        Post post = new Post(postCreate.getTitle(), postCreate.getContent());
+        Post post = Post.builder()
+                .title(postCreate.getTitle())
+                .content(postCreate.getContent())
+                .build();
+
         postRepository.save(post);
-        //repository.save(postCreate);
+       //return postRepository.save(post); //Post데이터 그대로 응답
+       //repository.save(postCreate);
 
     }
 }
