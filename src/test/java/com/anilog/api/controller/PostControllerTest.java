@@ -2,6 +2,8 @@ package com.anilog.api.controller;
 
 import com.anilog.api.domain.Post;
 import com.anilog.api.repository.PostRepository;
+import com.anilog.api.request.PostCreate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +19,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -26,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class PostControllerTest {
 
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,11 +46,18 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 Hello world출력")
     void test() throws Exception {
+        //given
+        PostCreate request = PostCreate.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);   //json String을 만들어 줌
 
         //expected
         mockMvc.perform(post("/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
                 )  // application/json
                 .andExpect(status().isOk())
                 .andExpect(content().string("{}"))
@@ -55,15 +68,21 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 title 값은 필수다.")
     void test2() throws Exception {
+        //given
+        PostCreate request = PostCreate.builder() //title null인경우
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);   //json String을 만들어 줌
 
         //expected
         mockMvc.perform(post("/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": null, \"content\": \"내용입니다.\"}")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
                 )  // application/json
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400")) //jsonPath사용
-                .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
                 .andExpect(jsonPath("$.validation.title").value("타이틀을 입력해주세요."))
                 .andDo(print());
     }
@@ -71,15 +90,22 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청시 DB에 값이 저장된다..")
     void test3() throws Exception {
+        //given
+        PostCreate request = PostCreate.builder() //title null인경우
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);   //json String을 만들어 줌
 
         //before
-        //postRepository.deleteAll();
+        //postRepository.deleteAll(  );
         //위에 clean() 이 테스트메소드할때마다 실행됨
 
         //expected
         mockMvc.perform(post("/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
                 )
                 .andExpect(status().isOk())
                 .andDo(print());
