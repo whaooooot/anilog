@@ -3,6 +3,7 @@ package com.anilog.api.service;
 import com.anilog.api.domain.Post;
 import com.anilog.api.repository.PostRepository;
 import com.anilog.api.request.PostCreate;
+import com.anilog.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,13 +57,13 @@ class PostServiceTest {
         postRepository.save(requestPost);   //저장하고
 
         // when
-        Post post = postService.get(requestPost.getId());  //저장한거 가져옴
+        PostResponse response = postService.get(requestPost.getId());  //저장한거 가져옴
 
         // then
-        assertNotNull(post);
+        assertNotNull(response);
         assertEquals(1L, postRepository.count()); //갯수확인 (전체테스트시 여러개라 오류 -> BeforeEach의 clean메소드로 지워주기)
-        assertEquals("foo", post.getTitle());
-        assertEquals("bar", post.getContent());
+        assertEquals("foo", response.getTitle());
+        assertEquals("bar", response.getContent());
     }
 
 
