@@ -72,17 +72,16 @@ class PostServiceTest {
     @DisplayName("글 여러개 조회")
     void test3(){
         // given
-        Post requestPost1 = Post.builder()
-                .title("foo1")
-                .content("bar2")
-                .build();
-        postRepository.save(requestPost1);   //저장하고
-
-        Post requestPost2 = Post.builder()
-                .title("foo2")
-                .content("bar2")
-                .build();
-        postRepository.save(requestPost2);   //저장하고
+        postRepository.saveAll(List.of(
+                Post.builder()
+                        .title("foo1")
+                        .content("bar2")
+                        .build(),
+                Post.builder()
+                        .title("foo2")
+                        .content("bar2")
+                        .build()
+        ));   //한번에 저장하기
 
         // when
         List<PostResponse> posts = postService.getList();
