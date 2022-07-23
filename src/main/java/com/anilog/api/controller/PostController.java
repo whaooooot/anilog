@@ -6,14 +6,10 @@ import com.anilog.api.response.PostResponse;
 import com.anilog.api.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Slf4j
@@ -35,19 +31,21 @@ public class PostController {
 
     /**
      * /posts -> 글 전체 조회(검색+페이징)
-     * /posts/{postId} -> 글 한개만 조회
+     * /posts/{postId} -> 글 한개만 조회 API (1개의 글을 가져오는 기능)
+     * /posts -> getMapping 사용 여러개의 글을 조회 API
      */
     @GetMapping("posts/{postId}")
-    public PostResponse get(@PathVariable(name = "postId") Long id){
+    public PostResponse get(@PathVariable Long postId){
         // Request 클래스 (PostCreate)
         // Response 클래스 (PostResponse)
 
-        PostResponse response = postService.get(id);
-        // 응답 클래스를 분리하세요 (서비스 정책에 맞는)
-        return response;
+        return postService.get(postId);
     }
 
-
+    @GetMapping("/posts")
+    public List<PostResponse> getList(){
+        return postService.getList();
+    }
 
 
 
