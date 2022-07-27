@@ -10,6 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,12 +89,15 @@ class PostServiceTest {
 
         // sql -> select, limit, offset
 
+        Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "id"); //수동이라 직접 지정해줘야함
 
         // when
-        List<PostResponse> posts = postService.getList(0);
+        List<PostResponse> posts = postService.getList(pageable);
 
         // then
         assertEquals(5L, posts.size()); //갯수확인
+        assertEquals("제목 30", posts.get(0).getTitle());
+        assertEquals("제목 26", posts.get(4).getTitle());
 
 
     }
