@@ -2,6 +2,7 @@ package com.anilog.api.controller;
 
 import com.anilog.api.domain.Post;
 import com.anilog.api.request.PostCreate;
+import com.anilog.api.request.PostSearch;
 import com.anilog.api.response.PostResponse;
 import com.anilog.api.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +46,9 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public List<PostResponse> getList(Pageable pageable)
+    public List<PostResponse> getList(@ModelAttribute PostSearch postSearch)
     {
-        return postService.getList(pageable);
+        return postService.getList(postSearch);
 
     }
 

@@ -154,7 +154,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 여러개 조회")
+    @DisplayName("글 여러개 조회 pageable")
     void test5() throws Exception {
         // given
         List<Post> requestPosts = IntStream.range(1, 31) //1~30  > 와 같은 코드 for(int i =1; i<31; i++)
@@ -169,6 +169,7 @@ class PostControllerTest {
          * [{id:..., title:...}, {id:..., title:...}]
          */
         // expected (when + then)
+        /**
         mockMvc.perform(get("/posts?page=1&sort=id,desc")  //&size=5  or yml에 default-page-size: 5
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -176,6 +177,53 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.[0].id").value(30))
                 .andExpect(jsonPath("$.[0].title").value("제목 30"))
                 .andExpect(jsonPath("$.[0].content").value("내용 30"))
+                .andDo(print());
+         */
+    }
+
+    @Test
+    @DisplayName("글 여러개 조회 QueryDSL사용")
+    void test6() throws Exception {
+        // given
+        List<Post> requestPosts = IntStream.range(0, 20) //0~20  > 와 같은 코드 for(int i =0; i<21; i++)
+                .mapToObj(i -> Post.builder()
+                        .title("제목 " + i)
+                        .content("내용 " + i)
+                        .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+
+        // expected (when + then)
+        mockMvc.perform(get("/posts?page=1&size=10")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(10)))
+                .andExpect(jsonPath("$.[0].title").value("제목 19"))
+                .andExpect(jsonPath("$.[0].content").value("내용 19"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
+    void test7() throws Exception {
+        // given
+        List<Post> requestPosts = IntStream.range(0, 20) //0~20  > 와 같은 코드 for(int i =0; i<21; i++)
+                .mapToObj(i -> Post.builder()
+                        .title("제목 " + i)
+                        .content("내용 " + i)
+                        .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+
+        // expected (when + then)
+        mockMvc.perform(get("/posts?page=0&size=10")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(10)))
+                .andExpect(jsonPath("$.[0].title").value("제목 19"))
+                .andExpect(jsonPath("$.[0].content").value("내용 19"))
                 .andDo(print());
     }
 

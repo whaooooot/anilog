@@ -3,6 +3,7 @@ package com.anilog.api.service;
 import com.anilog.api.domain.Post;
 import com.anilog.api.repository.PostRepository;
 import com.anilog.api.request.PostCreate;
+import com.anilog.api.request.PostSearch;
 import com.anilog.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +49,9 @@ public class PostService {
     // 글이 -> 100,000,000 -> DB글이 모두 조회하는경우 -> DB가 뻗을 수 있다.
     // DB -> 애플리케이션 서버로 전달하는 시간, 트래픽비용이 등이 많이 발생할 수 있다.
 
-    public List<PostResponse> getList(Pageable pageable){
+    public List<PostResponse> getList(PostSearch postSearch){
 
-        return postRepository.findAll(pageable).stream()
+        return postRepository.getList(postSearch).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }

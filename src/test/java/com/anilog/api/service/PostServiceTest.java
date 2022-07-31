@@ -3,6 +3,7 @@ package com.anilog.api.service;
 import com.anilog.api.domain.Post;
 import com.anilog.api.repository.PostRepository;
 import com.anilog.api.request.PostCreate;
+import com.anilog.api.request.PostSearch;
 import com.anilog.api.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +77,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 1페이지 조회")
+    @DisplayName("글 1페이지 조회 pageable")
     void test3(){
         // given
         List<Post> requestPosts = IntStream.range(1, 31) //1~30  > 와 같은 코드 for(int i =1; i<31; i++)
@@ -88,16 +89,49 @@ class PostServiceTest {
         postRepository.saveAll(requestPosts);
 
         // sql -> select, limit, offset
-
-        Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "id"); //수동이라 직접 지정해줘야함
+        /**
+        Pageable pageableRequest = PageRequest.of(0, 5, Sort.Direction.DESC, "id"); //수동이라 직접 지정해줘야함
+         */
 
         // when
-        List<PostResponse> posts = postService.getList(pageable);
+        /**
+        List<PostResponse> posts = postService.getList(pageableRequest);
+        */
 
         // then
+        /**
         assertEquals(5L, posts.size()); //갯수확인
         assertEquals("제목 30", posts.get(0).getTitle());
         assertEquals("제목 26", posts.get(4).getTitle());
+        */
+    }
+
+    @Test
+    @DisplayName("글 여러개 조회")
+    void test4(){
+        // given
+        List<Post> requestPosts = IntStream.range(0, 20) //1~20  > 와 같은 코드 for(int i =1; i<31; i++)
+                .mapToObj(i -> Post.builder()
+                        .title("제목 " + i)
+                        .content("내용 " + i)
+                        .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+        // sql -> select, limit, offset
+
+        PostSearch postSearch = PostSearch.builder()
+                .page(1)
+                .size(10)
+                .build();
+
+        // when
+        List<PostResponse> posts = postService.getList(postSearch);
+
+        // then
+        assertEquals(10L, posts.size()); //갯수확인
+        assertEquals("제목 19", posts.get(0).getTitle());
+
 
 
     }
